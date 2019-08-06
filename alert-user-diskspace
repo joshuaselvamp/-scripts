@@ -1,0 +1,13 @@
+#!/bin/sh
+recipients="josh.js89@hotmail.com"
+
+df -H | awk -F' ' '{ if(NR==1 ||  NR==2);  else  if(NR==3) print $4 " " $1;  else print $5 " " $2}' | while read output;
+do
+  #echo $output
+  usep=$(echo $output | awk '{ print $1}' | cut -d'%' -f1  )
+  partition=$(echo $output | awk '{ print $2 }' )
+  if [[ $usep -ge 90 ]]; then
+    echo "Running out of space \"$partition ($usep%)\" on $(hostname) as on $(date)"
+    echo -e "Running out of space \"$partition ($usep%)\" on $(hostname) as on $(date)" | /usr/sbin/sendmail $recipients
+  fi
+done
