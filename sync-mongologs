@@ -1,0 +1,21 @@
+#!/bin/bash
+
+hosts=( hostname   )
+
+
+for host in "${hosts[@]}"
+  do
+    echo $host
+    rsync -av -rltD -e 'ssh -i /home/mongod/.ssh/id_rsa -l mongod -C -c aes256-ctr' $host.rguest.com:/var/log/mongodb-mms-automation/automation-agent-verbose.log /logs/mongo-profiling/mongodb-mms-automation/$host
+    rsync -av -rltD -e 'ssh -i /home/mongod/.ssh/id_rsa -l mongod -C -c aes256-ctr' $host.rguest.com:/data/mongo/db/current/mongodb.log  /logs/mongo-profiling/mongo/$host
+    rsync -av -rltD -e 'ssh -i /home/mongod/.ssh/id_rsa -l mongod -C -c aes256-ctr' $host.rguest.com:/var/log/atop/atop.log  /logs/mongo-profiling/atop/$host
+    rsync -av -rltD -e 'ssh -i /home/mongod/.ssh/id_rsa -l mongod -C -c aes256-ctr' $host.rguest.com:/data/mongo/db/current/diagnostic.data/metrics.interim  /logs/mongo-profiling/diagnostic.data/$host
+  done
+
+
+hosts=( hostname )
+
+for host in "${hosts[@]}"
+  do
+    rsync -av -rltD -e 'ssh -i /home/mongod/.ssh/id_rsa -l mongod -C -c aes256-ctr' $host.rguest.com:/var/log/mongodb/mongod.log  /logs/mongo-profiling/mongo/$host
+  done
