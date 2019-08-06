@@ -1,0 +1,18 @@
+##check disk space
+for host in "hostname1" "hostname2" ; do
+  echo $host $(ssh -qT $host "df -h | grep centos-root | sed -e 's/[ \t]\+/:/g' | cut -d: -f 5")
+done
+##############@@@@@@@@@@@@@@@#########################@@@@@@@@@@@@@@@#########################@@@@@@@@@@@@@@@###########
+##clear disk space
+for host in "hostname1" "hostname2" ; do
+ssh -qT $host << EOF
+  sudo -i
+  if [[ -d /data/logs ]]; then
+    rm -f \$(find /data/logs -not -regex '.*/[a-z-]+\.log')
+  fi
+  if [[ -n "\$(command -v docker)" ]]; then
+    docker rm -v \$(docker ps --filter status=exited -q 2>/dev/null) 2>/dev/null
+    docker rmi \$(docker images --filter dangling=true -q 2>/dev/null) 2>/dev/null
+  fi
+EOF
+done 
