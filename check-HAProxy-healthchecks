@@ -1,0 +1,21 @@
+
+#!/bin/bash
+# Simple hacky script since I am too lazy to open tomcat manager and check each one manually.
+# Date/Version: 10/21/2015 v.01
+
+# Extract the end-points from HAProxy, and then curl healthchecks.
+for i in $(grep "acl url_" haproxy/haproxy.cfg | cut -d"/" -f 2 | grep -vE 'api-doc|report-platform' | grep -v status); do
+        if [ $i == "commands" ]
+        then
+                echo "Checking websocket-server: "
+                curl -s http://localhost:8089/websocket-server/generalhealthcheck
+                echo -e "\r\n"
+        else
+                echo "Checking $i: "
+                curl -s http://localhost:8080/$i/generalhealthcheck/details
+                echo -e "\r\n"
+        fi
+done
+
+echo "Status: "
+curl -s http://localhost:8080/status/index.html
